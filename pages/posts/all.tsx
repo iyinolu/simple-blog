@@ -3,8 +3,11 @@ import { GetServerSideProps } from 'next';
 import { Root, Post } from '../index';
 import axios from 'axios';
 import { ReactReduxContext } from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
+import { wrapper } from '../../store';
+import { State } from '../../redux/reducers/blogReducer';
 
-type axisContent ={
+type axisContent = {
     title: string;
     content: string;
 }
@@ -20,14 +23,21 @@ interface dataProp {
     }[];
 }
 
-const CreatePost:React.FC<dataProp> = ({ data }) => {
-    {console.log(data)}
-    const body = data.map((value, index) => {
+const CreatePost:React.FC<dataProp> = () => {
+    const dispatch = useDispatch()
+    
+    const { posts } = useSelector<State, State>(state => state);
+
+    React.useEffect(() => {
+        dispatch({type: "SHOW_POST"})
+    }, [posts, dispatch])
+    
+    const body = posts.map((value, index) => {
         return (
             <Post key={index} color="#eefa72" content={value.body} title={value.title} />
         )
     });
-    {console.log(data)}
+    
     return (
         <Root>
             {body}
@@ -35,17 +45,20 @@ const CreatePost:React.FC<dataProp> = ({ data }) => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
-    const res = await axios.get("https://simple-blog-api.crew.red/posts/")
-    const data = await res.data
-    console.log(data)
 
-    return {
-        props: {
-            data
-        }
-    }
-}
+
+
+// export const getStaticProps = wrapper.getStaticProps((store) => async ({ }) => {
+//     const ress = await axios.get("https://simple-blog-api.crew.red/posts/")
+//     const data = await ress.data
+    
+//     store.dispatch({ type: "ADD_POST", payload: data})
+//     return {
+//         props: {
+//             data
+//         }
+//     }
+// })
 
 
 export default CreatePost;

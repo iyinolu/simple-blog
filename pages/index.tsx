@@ -6,6 +6,12 @@ import styled from "styled-components";
 import postImage from '../public/postIMG.svg';
 import Link from 'next/link'
 import React from 'react';
+import { wrapper } from '../store';
+import { GetServerSideProps } from 'next';
+import axios from 'axios';
+import { useSelector, useDispatch } from 'react-redux';
+import { State } from '../redux/reducers/blogReducer';
+
 
 const AppBar = styled.div`
     display: flex;   
@@ -96,13 +102,37 @@ export const Root: React.FC<RootProp> = (props) => {
   )
 }
 
-const App: React.FC = () => {
-  const title1 = "3 ways to Blog for Fun"
-  const title2 = "Why server-side rendering is the coolest"
+interface dataProp {
+  data: {
+      title: string;
+      body: string;
+  }[];
+}
+
+const App: React.FC<dataProp> = ({data}) => {
+
+  // const dispatch = useDispatch()
+  // React.useEffect(() => {
+  //   dispatch({ type: "ADD_POST", payload: data})
+  // })
+
+  const { posts } = useSelector<State, State>(state => state);
+
+  const post_1 = posts[0]
+  const post_2 = posts[1]
+
+  const latestTitle_1 = post_1.title
+  const latestContent_1 = post_1.body
+
+  const latestTitle_2 = post_2.title
+  const latestContent_2 = post_2.body
+
+
   const content = 
     "LLorem ipsum dolor sit amet, consectetur adipiscing elit," +
     "sed do eiusmod tempor incididunt ut labore et dolore magna" + 
     "aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. <br/>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. "
+  
   const body = (
     <React.Fragment>
       <div style={{ display: "flex", position: "relative"}}>
@@ -112,8 +142,8 @@ const App: React.FC = () => {
         </h1>
       </div>
       <hr style={{ marginBottom: "50px"}} />
-      <Post color="#c5a5ff" content={content} title={title1} />
-      <Post color="#eefa72" content={content} title={title2} />
+      <Post color="#c5a5ff" content={latestContent_1} title={latestTitle_1} />
+      <Post color="#eefa72" content={latestContent_2} title={latestTitle_2} />
     </React.Fragment>
   )
   return (
@@ -183,10 +213,22 @@ export const Post: React.FC<Props> = ({ color, title, content}) => {
 }
 
 
+export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps((store) => async (value) => {
+  const response = await axios.get("https://simple-blog-api.crew.red/posts/")
+  const data = await response.data
+  const currentState = store.getState()
+  console.log('show current state')
+  console.log(value)
+  console.log(currentState)
+
+  store.dispatch({ type: "ADD_POST", payload: data})
+  return {
+      props: {
+          data
+      }
+  }
+})
+
+
+
 export default App;
-
-
-
-// LLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. <br/>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-
-// NextJS Sucks ASF

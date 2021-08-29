@@ -1,7 +1,9 @@
-import { createStore, applyMiddleware, Middleware, StoreEnhancer } from "redux"
+import { createStore, applyMiddleware, Middleware, StoreEnhancer, Store } from "redux"
+import { RootState } from './redux/reducers/index';
+import { State } from './redux/reducers/blogReducer';
+import blogReducer from './redux/reducers/blogReducer';
 
-import rootReducer from './redux/reducers/index';
-import { MakeStore, createWrapper } from "next-redux-wrapper";
+import { Context, MakeStore, createWrapper } from "next-redux-wrapper";
 
 const bindMiddleware = (middleware: Middleware[]): StoreEnhancer => {
     if (process.env.NODE_ENV !== 'production') {
@@ -11,14 +13,15 @@ const bindMiddleware = (middleware: Middleware[]): StoreEnhancer => {
     return applyMiddleware(...middleware);
 }
 
+const makeStore = (context: Context) => createStore(blogReducer, bindMiddleware([]));
 
-const makeStore: MakeStore<any> = () => {
-    const store = createStore(rootReducer, {}, bindMiddleware([]));
-    return store
-}
+// const makeStore: MakeStore<any> = () => {
+//     const store = createStore(rootReducer, {}, bindMiddleware([]));
+//     return store
+// }
     
 
-export const wrapper = createWrapper<any>(makeStore, { debug: true });
+export const wrapper = createWrapper<Store<State>>(makeStore, { debug: true });
 
 
 // const store = () => {
