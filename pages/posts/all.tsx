@@ -34,7 +34,14 @@ const CreatePost:React.FC<dataProp> = () => {
     
     const body = posts.map((value, index) => {
         return (
-            <Post key={index} color="#eefa72" content={value.body} title={value.title} />
+            <Post 
+                key={index} 
+                color="#eefa72" 
+                content={value.body} 
+                title={value.title} 
+                id={value.id} 
+                noView={false}
+            />
         )
     });
     

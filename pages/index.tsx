@@ -11,6 +11,7 @@ import { GetServerSideProps } from 'next';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { State } from '../redux/reducers/blogReducer';
+import { useRouter } from 'next/router';
 
 
 const AppBar = styled.div`
@@ -65,6 +66,7 @@ const PostContainer = styled.div`
     width: auto;
     padding: 50px 163px;
     background-color: white;
+    overflow: scroll;
 `
 
 interface RootProp {
@@ -81,9 +83,13 @@ export const Root: React.FC<RootProp> = (props) => {
               </title>
               <link rel="icon" href="/favicon.ico" />
             </Head>
-            <AppLogo> 
-              BLOG-AWAY!
-            </AppLogo> 
+              <AppLogo> 
+                <Link href="/">
+                  <a>
+                    BLOG-AWAY!
+                  </a>
+                </Link>    
+              </AppLogo> 
             <AppBarBtn style={{ marginRight: '10px'}}> 
               <Link href="/posts/new">
                 <a>New Post</a> 
@@ -111,21 +117,17 @@ interface dataProp {
 
 const App: React.FC<dataProp> = ({data}) => {
 
-  // const dispatch = useDispatch()
-  // React.useEffect(() => {
-  //   dispatch({ type: "ADD_POST", payload: data})
-  // })
-
   const { posts } = useSelector<State, State>(state => state);
 
-  const post_1 = posts[0]
-  const post_2 = posts[1]
-
+  const [post_2, post_1] = posts.slice(-2)
+  
   const latestTitle_1 = post_1.title
   const latestContent_1 = post_1.body
+  const latestId_1 = post_1.id
 
   const latestTitle_2 = post_2.title
   const latestContent_2 = post_2.body
+  const latestId_2 = post_2.id
 
 
   const content = 
@@ -142,8 +144,8 @@ const App: React.FC<dataProp> = ({data}) => {
         </h1>
       </div>
       <hr style={{ marginBottom: "50px"}} />
-      <Post color="#c5a5ff" content={latestContent_1} title={latestTitle_1} />
-      <Post color="#eefa72" content={latestContent_2} title={latestTitle_2} />
+      <Post color="#c5a5ff" content={latestContent_1} title={latestTitle_1} id={latestId_1} noView={false}/>
+      <Post color="#eefa72" content={latestContent_2} title={latestTitle_2} id={latestId_2} noView={false}/>
     </React.Fragment>
   )
   return (
@@ -177,7 +179,6 @@ const PostImg = styled.div`
     min-width: 200px;
     min-height: 250px;
     max-height: 250px;
-
 `
 
 type postImgProp = {
@@ -187,10 +188,16 @@ interface Props {
     color: string;
     title: string;
     content: string;
-
+    id: number;
+    noView: boolean;
 }
 
-export const Post: React.FC<Props> = ({ color, title, content}) => {
+export const Post: React.FC<Props> = ({ color, title, content, id, noView}) => {
+    const route = useRouter()
+    const viewPost = () => {
+      route.push(`/posts/${id}`)
+    }
+
     return (
         <>
           <div style={{ display: 'flex', marginTop: "40px"}}>
@@ -203,9 +210,12 @@ export const Post: React.FC<Props> = ({ color, title, content}) => {
                           {content}
                       </p>
                   </div>
-                  <StyledButton> 
-                    View 
-                  </StyledButton>
+                  {
+                    noView ? null 
+                    : <StyledButton onClick={ () => viewPost() }> 
+                        View 
+                      </StyledButton>
+                  }
               </div>
           </div>
         </>
@@ -213,13 +223,10 @@ export const Post: React.FC<Props> = ({ color, title, content}) => {
 }
 
 
-export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps((store) => async (value) => {
+export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps((store) => async () => {
   const response = await axios.get("https://simple-blog-api.crew.red/posts/")
   const data = await response.data
   const currentState = store.getState()
-  console.log('show current state')
-  console.log(value)
-  console.log(currentState)
 
   store.dispatch({ type: "ADD_POST", payload: data})
   return {

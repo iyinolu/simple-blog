@@ -2,8 +2,12 @@ import React from 'react'
 import { Root } from '../index';
 import { useSelector, useDispatch } from 'react-redux';
 import { State } from '../../redux/reducers/blogReducer';
+import { useRouter } from 'next/router';
+import axios from 'axios';
 
 const CreatePost:React.FC = () => {
+
+    const router = useRouter();
     const dispatch = useDispatch()
     const {posts} = useSelector<State, State>(state => state);
     const [title, setTitle] = React.useState('')
@@ -16,7 +20,11 @@ const CreatePost:React.FC = () => {
     const handleSubmit = (e) => {
         const blogItem = {title: title, body: contents}
         e.preventDefault()
-        dispatch({ type: "ADD_POST", payload: [blogItem]})
+        axios.post("https://simple-blog-api.crew.red/posts", blogItem)
+        .then(res => {
+            router.push("/")
+        })
+        .catch(err => {})
     }
 
     const content = (

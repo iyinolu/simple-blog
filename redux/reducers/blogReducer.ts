@@ -11,7 +11,6 @@ export interface BlogState {
 }
 export interface State {
     posts: BlogState[]
-    name?: string
 }
 
 const initialState: State = {
@@ -21,7 +20,6 @@ const initialState: State = {
 export default function blogReducer(state: State = initialState, action: AnyAction) {
     switch (action.type) {
         case HYDRATE:             
-            console.log(action)
             return { ...state, ...action.payload }
         case "ADD_POST":
             return {...state, posts: [...state.posts, ...action.payload]}
