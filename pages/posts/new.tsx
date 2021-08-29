@@ -25,7 +25,7 @@ const CreatePost:React.FC = () => {
     )
     return (
         <Root>
-            {content}
+            {[content]}
         </Root>
     )
 

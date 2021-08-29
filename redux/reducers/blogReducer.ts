@@ -1,6 +1,7 @@
 import React from 'react';
 import { ADD_POST, SHOW_POST } from '../actions';
 import { Action } from '../actions/actions';
+import {HYDRATE} from "next-redux-wrapper";
 
 export interface BlogState {
     title: string;
@@ -8,12 +9,14 @@ export interface BlogState {
 }
 
 const initialState: BlogState = {
-    title: "", 
-    body: "",
+    title: "dsd", 
+    body: "sdd",
 };
 
 export default function blogReducer(state = initialState, action: Action) {
     switch (action.type) {
+        case HYDRATE: 
+            return {...state}
         case "ADD_POST":
             return {...state, ...action.payload}
         case "SHOW_POST":
@@ -22,8 +25,3 @@ export default function blogReducer(state = initialState, action: Action) {
             return state
     }
 }
-
-// const temp = () => {
-//     blogReducer({title: 'eje', body: "jdjd"}, 'jdhdh')
-// }
-

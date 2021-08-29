@@ -97,7 +97,8 @@ export const Root: React.FC<RootProp> = (props) => {
 }
 
 const App: React.FC = () => {
-  const title = "NextJS Sucks ASF"
+  const title1 = "3 ways to Blog for Fun"
+  const title2 = "Why server-side rendering is the coolest"
   const content = 
     "LLorem ipsum dolor sit amet, consectetur adipiscing elit," +
     "sed do eiusmod tempor incididunt ut labore et dolore magna" + 
@@ -111,8 +112,8 @@ const App: React.FC = () => {
         </h1>
       </div>
       <hr style={{ marginBottom: "50px"}} />
-      <Post color="#c5a5ff" content={content} title={title} />
-      <Post color="#eefa72" content={content} title={title} />
+      <Post color="#c5a5ff" content={content} title={title1} />
+      <Post color="#eefa72" content={content} title={title2} />
     </React.Fragment>
   )
   return (
