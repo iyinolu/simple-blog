@@ -2,7 +2,10 @@ import React from 'react'
 import { useRouter } from 'next/router'
 import { Root, Post } from '../index';
 import { useSelector } from 'react-redux';
+import { GetServerSideProps } from 'next';
 import { BlogState, State } from '../../redux/reducers/blogReducer';
+import axios from 'axios';
+import { wrapper } from '../../store';
 
 
 const SinglePost:React.FC = () => {
@@ -30,3 +33,16 @@ const SinglePost:React.FC = () => {
 }
 
 export default SinglePost
+
+export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps((store) => async () => {
+    const response = await axios.get("https://simple-blog-api.crew.red/posts/")
+    const data = await response.data
+    const currentState = store.getState()
+  
+    store.dispatch({ type: "ADD_POST", payload: data})
+    return {
+        props: {
+            data
+        }
+    }
+  })
